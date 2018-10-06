@@ -5,4 +5,4 @@
 
 ![](https://images2015.cnblogs.com/blog/890966/201611/890966-20161123134503362-571302342.png)
 
-对python版本进行测试，利用hdu树KD的模板题[2966](http://acm.hdu.edu.cn/status.php)，通过的c++ac代码进行了对拍检测
+对python版本进行测试，利用hdu树KD的模板题[2966](http://acm.hdu.edu.cn/showproblem.php?pid=2966)，通过的c++ac代码进行了对拍检测
