@@ -12,8 +12,9 @@ def sqr(x):
 
 
 class Node:
-    def __init__(self, axes=None):
+    def __init__(self, axes=None, num=0):
         self.x = copy.deepcopy(axes)
+        self.num = num
 
     def axes_in(self, axes):
         if self.x:
@@ -38,7 +39,7 @@ class KDTree:
     def __init__(self, nodes=None):
         """传入向量矩阵即可"""
         self.N = len(nodes)  # 静态点数
-        self.node = [Node(nod) for nod in nodes]
+        self.node = [Node(nod, j) for j, nod in enumerate(nodes)]
         self.K = self.tree_dimension()
         self.sz = [0 for i in range(self.N << 2)]  # size数组
         self.p = self.open_array()
@@ -47,7 +48,6 @@ class KDTree:
         self.que = queue.PriorityQueue()
         self.target = Node()
         self.build_kd(1, 0, self.N - 1, 0)
-        pass
 
     def build_kd(self, i, l, r, dep):
         """构建kd树，传入树下标(初始为1)，左端点(0)，右端点(N-1)，深度(0)"""
@@ -98,12 +98,14 @@ class KDTree:
             backup = self.que.get()
             if tmp.dis < backup.dis:
                 self.que.put(tmp)
-                backup = tmp
+                backup = self.que.get()
+                self.que.put(backup)
             else:
                 self.que.put(backup)
             if sqr(self.target.x[idx] - self.p[i].x[idx]) < backup.dis:
                 flag = True
-        self.query(rc, m, dep + 1)
+        if flag:
+            self.query(rc, m, dep + 1)
 
     def tree_dimension(self):
         if len(self.node) == 0:
@@ -125,7 +127,7 @@ class KDTree:
         tmp = []
         for i in range(l, r):
             tmp.append(self.node[i])
-        sorted(tmp, key=lambda x: x.x[idx], reverse=False)
+        tmp.sort(key=lambda x: x.x[idx], reverse=False)
         j = 0
         for i in range(l, r):
             self.node[i] = tmp[j]
@@ -135,24 +137,3 @@ class KDTree:
         while not self.que.empty():
             self.que.get()
         self.q_sz = 0
-
-
-def solve():
-    n = int(input())
-    a = [[0, 0] for i in range(n)]
-    for i in range(n):
-        a[i] = list(map(int, input().split()))
-    kdt = KDTree(a)
-    for nod in a:
-        res = kdt.query_kd(2, nod)
-        ans = 0
-        for j in range(2):
-            ans += sqr(nod[j] - res[1][j])
-        print(ans)
-
-
-if __name__ == '__main__':
-    """测试HDU2966,静态KD树模板题"""
-    T = int(input())
-    for i in range(0, T):
-        solve()
